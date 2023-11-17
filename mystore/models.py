@@ -12,15 +12,15 @@ class UserProfile(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField()
+    product_name = models.CharField(max_length=50)
+    description = models.TextField(max_length=500)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    brand = models.CharField(max_length=255)
-    images = models.ManyToManyField('Image', related_name='products')
+    brand = models.CharField(max_length=20)
+    images = models.ManyToManyField('Image', related_name='products', blank=True)
     category = models.ForeignKey('Category', on_delete=models.CASCADE, related_name='products')
 
     def __str__(self):
-        return self.name
+        return self.product_name
 
 
 class Image(models.Model):
@@ -32,15 +32,14 @@ class Image(models.Model):
 
 class Category(models.Model):
     category_name = models.CharField(max_length=255)
-    description = models.TextField()
 
     def __str__(self):
-        return self.name
+        return self.category_name
 
 
 class Order(models.Model):
     products = models.ManyToManyField('Product', related_name='orders')
-    customer_name = models.CharField(max_length=255)
+    customer_name = models.ForeignKey(User, on_delete=models.CASCADE)
     shipping_address = models.TextField()
     status = models.CharField(max_length=255)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
