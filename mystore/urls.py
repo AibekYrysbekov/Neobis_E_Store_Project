@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path, include, re_path
 from .views import *
 from rest_framework import routers
 
@@ -14,6 +14,9 @@ urlpatterns = [
     path('', include(router.urls), name='order'),
     # path('users/', UserListView.as_view(), name='user-list'),
     # path('users/<int:pk>/', UserDetailView.as_view(), name='user-detail'),
-    path('auth/', include('rest_framework.urls')),
+    path('drf-auth/', include('rest_framework.urls')),
+    path('auth/', include('djoser.urls')),
+    re_path(r'^auth/', include('djoser.urls.authtoken')),
+
 
 ]
