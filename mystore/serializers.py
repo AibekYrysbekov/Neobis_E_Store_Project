@@ -47,6 +47,34 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    quantity = serializers.IntegerField()
+
     class Meta:
         model = Order
-        fields = '__all__'
+        fields = ('id', 'products', 'customer_name', 'shipping_address', 'status', 'total_price', 'quantity',
+                  'discount')
+        read_only_fields = ('total_price', 'status', 'discount')
+
+    def create(self, validated_data):
+        products_data = validated_data.pop('products')
+        quantity = validated_data.pop('quantity')
+
+        order = Order.objects.create(**validated_data)
+        for product_data in products_data:
+            order.products.add(product_data)
+
+        order.quantity = quantity
+        order.save()
+
+        total_price = order.calculate_total_price()
+        order.total_price = total_price
+        order.save()
+
+        discounted_price = order.discounted_price()
+        order.total_price = discounted_price
+        order.save()
+
+        return order
+
+
+
